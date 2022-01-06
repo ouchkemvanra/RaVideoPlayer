@@ -518,7 +518,7 @@ extension RaVideoPlayerView{
     private func setupButton(){
         loadingView = .init(frame: .zero)
         if #available(iOS 13.0, *) {
-            loadingView.activityIndicatorViewStyle = .medium
+            loadingView.style = .medium
         } else {
             // Fallback on earlier versions
         }
@@ -723,7 +723,11 @@ extension RaVideoPlayerView{
         delegate?.didTapOnOption()
     }
     @objc func airPlayAction(_ sender: UIButton){
-        routePickerView.present()
+        if #available(iOS 11.0, *) {
+            routePickerView.present()
+        } else {
+            // Fallback on earlier versions
+        }
     }
 }
 fileprivate extension AVRoutePickerView {
@@ -910,10 +914,10 @@ extension RaVideoPlayerView{
         guard toSeek <= playerItem.duration.seconds, toSeek >= 0 else {return}
         player.seek(to: .init(seconds: toSeek, preferredTimescale: 1))
         if direction == .left{
-            bringSubviewToFront(seekingBackwardView)
+            bringSubview(toFront: seekingBackwardView)
             seekingBackwardView.setAnimation()
         } else{
-            bringSubviewToFront(seekingForwardView)
+            bringSubview(toFront: seekingForwardView)
             seekingForwardView.setAnimation()
         }
     }
@@ -997,7 +1001,9 @@ extension RaVideoPlayerView{
                pulseLayer.path = circularPath.cgPath
                pulseLayer.lineWidth = 2.0
                pulseLayer.fillColor = UIColor.lightText.cgColor
-               pulseLayer.lineCap = CAShapeLayerLineCap.round
+               if #available(iOS 13.0, *) {
+                   pulseLayer.lineCap = CAShapeLayerLineCap.round
+               }
                pulseLayer.position = center
                seekingForwardView.layer.addSublayer(pulseLayer)
                pulseArray.append(pulseLayer)
